@@ -14,11 +14,14 @@ import ms_tournament.protocol_admin_pb2 as pb
 
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
 
 MS_HOST = "https://mahjongsoul.tournament.yo-star.com"
 MS_MANAGER_API_URL = "https://mjusgs.mahjongsoul.com:7988"
+
 
 async def main():
     """
@@ -41,9 +44,11 @@ async def main():
 
 async def connect():
     async with aiohttp.ClientSession() as session:
-    	async with session.get("{}/api/customized_contest/random".format(MS_MANAGER_API_URL)) as res:
+        async with session.get(
+            "{}/api/customized_contest/random".format(MS_MANAGER_API_URL)
+        ) as res:
             servers = await res.json()
-            endpoint_gate = servers['servers'][0]
+            endpoint_gate = servers["servers"][0]
             endpoint = "wss://{}/".format(endpoint_gate)
 
     logging.info(f"Chosen endpoint: {endpoint}")
@@ -83,6 +88,7 @@ async def login(manager_api, access_token):
     logging.info("")
     return True
 
+
 async def load_tournaments_list(manager_api):
     logging.info("Loading tournament list...")
 
@@ -92,12 +98,13 @@ async def load_tournaments_list(manager_api):
     logging.info(f"found tournaments : {tournaments_count}")
 
     for i in range(0, tournaments_count):
-        logging.info("") 
-        logging.info(f"unique_id: {res.contests[i].unique_id}") 
+        logging.info("")
+        logging.info(f"unique_id: {res.contests[i].unique_id}")
         logging.info(f"contest_id: {res.contests[i].contest_id}")
         logging.info(f"contest_name: {res.contests[i].contest_name}")
 
     return True
+
 
 if __name__ == "__main__":
     asyncio.run(main())

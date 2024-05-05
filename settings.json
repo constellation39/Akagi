@@ -1,24 +1,25 @@
 {
-    "Unlocker": false,
-    "Autoplay": false,
-    "RandomTime": {
-        "new_min": 3.5,
-        "new_max": 4.5,
-        "min": 1.0,
-        "max": 3.2,
-        "moqiedelay": true
-    },
-    "Helper": false,
-    "Autohu": false,
-    "Port": {
-        "MITM": 7878,
-        "XMLRPC": 7879,
-        "MJAI": 28680
-    },
-    "Playwright": {
-        "enable": true,
-        "width": 1280,
-        "height": 720
-    },
-    "Overlay": true
+  "Unlocker": false,
+  "Autoplay": false,
+  "RandomTime": {
+    "new_min": 3.5,
+    "new_max": 4.5,
+    "min": 1.0,
+    "max": 3.2,
+    "moqiedelay": true
+  },
+  "Helper": false,
+  "Autohu": false,
+  "Port": {
+    "MITM": 7878,
+    "XMLRPC": 7879,
+    "MJAI": 28680
+  },
+  "Playwright": {
+    "enable": true,
+    "width": 1280,
+    "height": 720
+  },
+  "Overlay": true,
+  "AnalyserModule": "mortal_4p"
 }

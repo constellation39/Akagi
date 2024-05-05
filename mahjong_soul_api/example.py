@@ -15,10 +15,12 @@ from google.protobuf.json_format import MessageToJson
 
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-MS_HOST = "https://game.maj-soul.com"
+MS_HOST = "https://game.maj-soul.net"
 
 
 async def main():
@@ -46,7 +48,9 @@ async def main():
         logging.info("Found {} records".format(len(game_logs)))
     else:
         game_log = await load_and_process_game_log(lobby, log_uuid, version_to_force)
-        logging.info("game {} result : \n{}".format(game_log.head.uuid, game_log.head.result))
+        logging.info(
+            "game {} result : \n{}".format(game_log.head.uuid, game_log.head.result)
+        )
 
     await channel.close()
 
@@ -148,14 +152,20 @@ async def load_and_process_game_log(lobby, uuid, version_to_force):
     for i in range(0, game_records_count):
         round_record_wrapper.ParseFromString(game_details.records[i])
 
-        if round_record_wrapper.name == ".lq.RecordNewRound" and not is_show_new_round_record:
+        if (
+            round_record_wrapper.name == ".lq.RecordNewRound"
+            and not is_show_new_round_record
+        ):
             logging.info("Found record type = {}".format(round_record_wrapper.name))
             round_data = pb.RecordNewRound()
             round_data.ParseFromString(round_record_wrapper.data)
             print_data_as_json(round_data, "RecordNewRound")
             is_show_new_round_record = True
 
-        if round_record_wrapper.name == ".lq.RecordDiscardTile" and not is_show_discard_tile:
+        if (
+            round_record_wrapper.name == ".lq.RecordDiscardTile"
+            and not is_show_discard_tile
+        ):
             logging.info("Found record type = {}".format(round_record_wrapper.name))
             discard_tile = pb.RecordDiscardTile()
             discard_tile.ParseFromString(round_record_wrapper.data)

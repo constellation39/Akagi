@@ -108,7 +108,7 @@ def fetch_resver():
     res_data: dict = response.json()
 
     emotes: defaultdict[str, list[int]] = defaultdict(list)
-    pattern = rf"en\/extendRes\/emo\/e(\d+)\/(\d+)\.png"
+    pattern = r"en\/extendRes\/emo\/e(\d+)\/(\d+)\.png"
 
     for text in res_data.get("res"):
         matches = re.search(pattern, text)
@@ -150,7 +150,6 @@ def init():
 
 # console
 console = Console()
-
 
 # logger
 logger = getLogger(__name__)

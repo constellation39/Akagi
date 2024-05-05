@@ -195,8 +195,8 @@ Next, you can find me on Discord, where I will assign you a donor role.
 
 <!-- Planned in future:
 
-- Help test unreleased features that are still in development
-- Other bot.zip options to choose from -->
+- Help template unreleased features that are still in development
+- Other analyser.zip options to choose from -->
 
 # See Also
 
