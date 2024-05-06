@@ -56,7 +56,7 @@ class MajsoulBridge:
         self.rank = -1
         self.score = -1
 
-        self.mjai_client = load_bot("mortal_4p")
+        self.mjai_client = load_bot("kanachan")
         self.is_3p = False
         pass
 

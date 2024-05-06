@@ -35,8 +35,8 @@ class Impl(Analyser):
             logger.debug(f"{self.player_id} -> {outs}")
 
             if (
-                json.loads(events)[-1]["type"] == "tsumo"
-                and json.loads(events)[-1]["actor"] == self.player_id
+                    json.loads(events)[-1]["type"] == "tsumo"
+                    and json.loads(events)[-1]["actor"] == self.player_id
             ):
                 try:
                     json_data = json.loads(outs)
@@ -51,6 +51,9 @@ class Impl(Analyser):
         except Exception as e:
             raise RuntimeError(f"Error player_id={self.player_id} {e}")
         return outs
+
+    def state(self):
+        return self.bot.state()
 
     def hash(self) -> str:
         return self.bot.model_hash

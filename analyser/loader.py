@@ -1,4 +1,3 @@
-from typing import Type
 import importlib.util
 
 from analyser.analyser import Analyser
@@ -15,8 +14,3 @@ def load_bot(module_name) -> Analyser:
         raise ValueError(f"Module {module_name} not found.")
     except AttributeError:
         raise ValueError(f"Class Impl not found in module {module_name}.impl.")
-
-
-if __name__ == "__main__":
-    bot = load_bot("template")
-    print(bot)

@@ -34,3 +34,5 @@
 /mitmconfig
 /.idea
 /download
+*.pth
+/analyser/model/*.kanachan

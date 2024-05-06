@@ -322,153 +322,148 @@ class FlowScreen(Screen):
             self.app.rpc_server.start_overlay_action()
 
     def refresh_log(self) -> None:
-        try:
-            if self.flow_id not in self.app.liqi_msg_dict:
-                self.action_quit()
-            if self.liqi_msg_idx < len(self.app.liqi_msg_dict[self.flow_id]):
-                # self.liqi_log.update(self.app.liqi_msg_dict[self.flow_id][-1])
-                # self.liqi_log_container.scroll_end(animate=False)
-                self.liqi_msg_idx += 1
-                liqi_msg = self.app.liqi_msg_dict[self.flow_id][-1]
-                if liqi_msg["type"] == MsgType.Notify:
-                    if liqi_msg["method"] == ".lq.ActionPrototype":
-                        if "operation" in liqi_msg["data"]["data"]:
-                            if "operationList" in liqi_msg["data"]["data"]["operation"]:
-                                self.action.latest_operation_list = liqi_msg["data"][
-                                    "data"
-                                ]["operation"]["operationList"]
-                        if liqi_msg["data"]["name"] == "ActionDiscardTile":
-                            self.action.isNewRound = False
-                            if liqi_msg["data"]["data"]["isLiqi"]:
-                                self.isLiqi = True
-                            pass
-                        if liqi_msg["data"]["name"] == "ActionNewRound":
-                            self.action.isNewRound = True
-                            self.action.reached = False
-                        # No matter what the action is, as long as we get a new action, we should stop the verification job as it's outdated.
-                        if self.dahai_verfication_job is not None:
-                            self.dahai_verfication_job.stop()
-                            self.dahai_verfication_job = None
-                    if (
-                            liqi_msg["method"] == ".lq.NotifyGameEndResult"
-                            or liqi_msg["method"] == ".lq.NotifyGameTerminate"
-                    ):
-                        self.action_quit()
+        if self.flow_id not in self.app.liqi_msg_dict:
+            self.action_quit()
+        if self.liqi_msg_idx < len(self.app.liqi_msg_dict[self.flow_id]):
+            # self.liqi_log.update(self.app.liqi_msg_dict[self.flow_id][-1])
+            # self.liqi_log_container.scroll_end(animate=False)
+            self.liqi_msg_idx += 1
+            liqi_msg = self.app.liqi_msg_dict[self.flow_id][-1]
+            if liqi_msg["type"] == MsgType.Notify:
+                if liqi_msg["method"] == ".lq.ActionPrototype":
+                    if "operation" in liqi_msg["data"]["data"]:
+                        if "operationList" in liqi_msg["data"]["data"]["operation"]:
+                            self.action.latest_operation_list = liqi_msg["data"][
+                                "data"
+                            ]["operation"]["operationList"]
+                    if liqi_msg["data"]["name"] == "ActionDiscardTile":
+                        self.action.isNewRound = False
+                        if liqi_msg["data"]["data"]["isLiqi"]:
+                            self.isLiqi = True
+                        pass
+                    if liqi_msg["data"]["name"] == "ActionNewRound":
+                        self.action.isNewRound = True
+                        self.action.reached = False
+                    # No matter what the action is, as long as we get a new action, we should stop the verification job as it's outdated.
+                    if self.dahai_verfication_job is not None:
+                        self.dahai_verfication_job.stop()
+                        self.dahai_verfication_job = None
+                if (
+                        liqi_msg["method"] == ".lq.NotifyGameEndResult"
+                        or liqi_msg["method"] == ".lq.NotifyGameTerminate"
+                ):
+                    self.action_quit()
 
-            elif self.syncing:
-                self.query_one("#loading_indicator").remove()
-                self.syncing = False
-                if AUTOPLAY and len(self.app.mjai_msg_dict[self.flow_id]) > 0:
-                    logger.log("CLICK", self.app.mjai_msg_dict[self.flow_id][-1])
-                    self.app.set_timer(2, self.autoplay)
-            if self.mjai_msg_idx < len(self.app.mjai_msg_dict[self.flow_id]):
-                bridge = self.app.bridge[self.flow_id]
-                self.app.mjai_msg_dict[self.flow_id][-1]["meta"] = meta_to_recommend(
-                    self.app.mjai_msg_dict[self.flow_id][-1]["meta"], bridge.is_3p
-                )
-                latest_mjai_msg = self.app.mjai_msg_dict[self.flow_id][-1]
-                # Update tehai
-                player_state = bridge.mjai_client.bot.state()
-                tehai, tsumohai = state_to_tehai(player_state)
-                for idx, tehai_label in enumerate(self.tehai_labels):
-                    tehai_label.update(TILE_2_UNICODE_ART_RICH[tehai[idx]])
-                # action_list = [x[0] for x in latest_mjai_msg['meta']]
-                # for idx, tehai_value_label in enumerate(self.tehai_value_labels):
-                #     # latest_mjai_msg['meta'] is list of (pai, value)
-                #     try:
-                #         pai_value = int(latest_mjai_msg['meta'][action_list.index(tehai[idx])][1] * 40)
-                #         if pai_value == 40:
-                #             pai_value = 39
-                #     except ValueError:
-                #         pai_value = 40
-                #     tehai_value_label.update(HAI_VALUE[pai_value])
-                self.tsumohai_label.update(TILE_2_UNICODE_ART_RICH[tsumohai])
-                # if tsumohai in action_list:
-                #     try:
-                #         pai_value = int(latest_mjai_msg['meta'][action_list.index(tsumohai)][1] * 40)
-                #         if pai_value == 40:
-                #             pai_value = 39
-                #     except ValueError:
-                #         pai_value = 40
-                #     self.tsumohai_value_label.update(HAI_VALUE[pai_value])
+        elif self.syncing:
+            self.query_one("#loading_indicator").remove()
+            self.syncing = False
+            if AUTOPLAY and len(self.app.mjai_msg_dict[self.flow_id]) > 0:
+                logger.log("CLICK", self.app.mjai_msg_dict[self.flow_id][-1])
+                self.app.set_timer(2, self.autoplay)
+        if self.mjai_msg_idx < len(self.app.mjai_msg_dict[self.flow_id]):
+            bridge = self.app.bridge[self.flow_id]
+            self.app.mjai_msg_dict[self.flow_id][-1]["meta"] = meta_to_recommend(
+                self.app.mjai_msg_dict[self.flow_id][-1]["meta"], bridge.is_3p
+            )
+            latest_mjai_msg = self.app.mjai_msg_dict[self.flow_id][-1]
+            # Update tehai
+            player_state = bridge.mjai_client.bot.state()
+            tehai, tsumohai = state_to_tehai(player_state)
+            for idx, tehai_label in enumerate(self.tehai_labels):
+                tehai_label.update(TILE_2_UNICODE_ART_RICH[tehai[idx]])
+            # action_list = [x[0] for x in latest_mjai_msg['meta']]
+            # for idx, tehai_value_label in enumerate(self.tehai_value_labels):
+            #     # latest_mjai_msg['meta'] is list of (pai, value)
+            #     try:
+            #         pai_value = int(latest_mjai_msg['meta'][action_list.index(tehai[idx])][1] * 40)
+            #         if pai_value == 40:
+            #             pai_value = 39
+            #     except ValueError:
+            #         pai_value = 40
+            #     tehai_value_label.update(HAI_VALUE[pai_value])
+            self.tsumohai_label.update(TILE_2_UNICODE_ART_RICH[tsumohai])
+            # if tsumohai in action_list:
+            #     try:
+            #         pai_value = int(latest_mjai_msg['meta'][action_list.index(tsumohai)][1] * 40)
+            #         if pai_value == 40:
+            #             pai_value = 39
+            #     except ValueError:
+            #         pai_value = 40
+            #     self.tsumohai_value_label.update(HAI_VALUE[pai_value])
 
-                self.app.rpc_server.clear_top3()
+            self.app.rpc_server.clear_top3()
 
-                # 將weight轉換為字典形式以便快速查找
-                weight_dict = dict(self.app.mjai_msg_dict[self.flow_id][-1]["meta"])
+            # 將weight轉換為字典形式以便快速查找
+            weight_dict = dict(self.app.mjai_msg_dict[self.flow_id][-1]["meta"])
 
-                # 生成對應tile_list的權重列表
-                tile_order_weight = [
-                    weight_dict[tile]
-                    if tile in weight_dict
-                    else -1.0
-                    if tile == "?"
-                    else 0.0
-                    for tile in tehai
-                ]
-                tile_order_weight.append(
-                    weight_dict[tsumohai]
-                    if tsumohai in weight_dict
-                    else -1.0
-                    if tsumohai == "?"
-                    else 0.0
-                )
-                # tile_order_weight is numpy.float64, need to convert to float
-                tile_order_weight = [float(weight) for weight in tile_order_weight]
-                self.app.rpc_server.draw_weight(tile_order_weight)
+            # 生成對應tile_list的權重列表
+            tile_order_weight = [
+                weight_dict[tile]
+                if tile in weight_dict
+                else -1.0
+                if tile == "?"
+                else 0.0
+                for tile in tehai
+            ]
+            tile_order_weight.append(
+                weight_dict[tsumohai]
+                if tsumohai in weight_dict
+                else -1.0
+                if tsumohai == "?"
+                else 0.0
+            )
+            # tile_order_weight is numpy.float64, need to convert to float
+            tile_order_weight = [float(weight) for weight in tile_order_weight]
+            self.app.rpc_server.draw_weight(tile_order_weight)
 
-                # mjai log
-                self.mjai_log.update(self.app.mjai_msg_dict[self.flow_id][-3:])
-                self.mjai_log_container.scroll_end(animate=False)
-                self.mjai_msg_idx += 1
-                self.akagi_action.label = latest_mjai_msg["type"]
-                for akagi_action_class in self.akagi_action.classes:
-                    self.akagi_action.remove_class(akagi_action_class)
-                self.akagi_action.add_class("action_" + latest_mjai_msg["type"])
-                for akagi_pai_class in self.akagi_pai.classes:
-                    self.akagi_pai.remove_class(akagi_pai_class)
-                self.akagi_pai.add_class("pai_" + latest_mjai_msg["type"])
-                for consumed_pai in self.consumed_pais:
-                    consumed_pai.update(TILE_2_UNICODE_ART_RICH["?"])
-                self.vertical_rule.update(EMPTY_VERTICAL_RULE)
-                if "consumed" in latest_mjai_msg:
-                    self.akagi_pai.label = str(latest_mjai_msg["consumed"])
-                    if "pai" in latest_mjai_msg:
-                        self.pai_unicode_art.update(
-                            TILE_2_UNICODE_ART_RICH[latest_mjai_msg["pai"]]
-                        )
-                    for i, c in enumerate(latest_mjai_msg["consumed"]):
-                        if i >= 3:
-                            # ankan
-                            self.pai_unicode_art.update(TILE_2_UNICODE_ART_RICH[c])
-                            continue
-                        self.consumed_pais[i].update(TILE_2_UNICODE_ART_RICH[c])
-                    self.vertical_rule.update(VERTICAL_RULE)
-                elif "pai" in latest_mjai_msg:
-                    self.consume_ids = []
-                    self.akagi_pai.label = str(latest_mjai_msg["pai"])
+            # mjai log
+            self.mjai_log.update(self.app.mjai_msg_dict[self.flow_id][-3:])
+            self.mjai_log_container.scroll_end(animate=False)
+            self.mjai_msg_idx += 1
+            self.akagi_action.label = latest_mjai_msg["type"]
+            for akagi_action_class in self.akagi_action.classes:
+                self.akagi_action.remove_class(akagi_action_class)
+            self.akagi_action.add_class("action_" + latest_mjai_msg["type"])
+            for akagi_pai_class in self.akagi_pai.classes:
+                self.akagi_pai.remove_class(akagi_pai_class)
+            self.akagi_pai.add_class("pai_" + latest_mjai_msg["type"])
+            for consumed_pai in self.consumed_pais:
+                consumed_pai.update(TILE_2_UNICODE_ART_RICH["?"])
+            self.vertical_rule.update(EMPTY_VERTICAL_RULE)
+            if "consumed" in latest_mjai_msg:
+                self.akagi_pai.label = str(latest_mjai_msg["consumed"])
+                if "pai" in latest_mjai_msg:
                     self.pai_unicode_art.update(
                         TILE_2_UNICODE_ART_RICH[latest_mjai_msg["pai"]]
                     )
-                else:
-                    self.akagi_pai.label = "None"
-                    self.pai_unicode_art.update(TILE_2_UNICODE_ART_RICH["?"])
-                for recommandation in self.recommandations_container.children:
-                    recommandation.update(latest_mjai_msg, player_state)
+                for i, c in enumerate(latest_mjai_msg["consumed"]):
+                    if i >= 3:
+                        # ankan
+                        self.pai_unicode_art.update(TILE_2_UNICODE_ART_RICH[c])
+                        continue
+                    self.consumed_pais[i].update(TILE_2_UNICODE_ART_RICH[c])
+                self.vertical_rule.update(VERTICAL_RULE)
+            elif "pai" in latest_mjai_msg:
+                self.consume_ids = []
+                self.akagi_pai.label = str(latest_mjai_msg["pai"])
+                self.pai_unicode_art.update(
+                    TILE_2_UNICODE_ART_RICH[latest_mjai_msg["pai"]]
+                )
+            else:
+                self.akagi_pai.label = "None"
+                self.pai_unicode_art.update(TILE_2_UNICODE_ART_RICH["?"])
+            for recommandation in self.recommandations_container.children:
+                recommandation.update(latest_mjai_msg, player_state)
 
-                # Action
-                logger.info(f"Current tehai: {tehai}")
-                logger.info(f"Current tsumohai: {tsumohai}")
-                self.tehai = tehai
-                self.tsumohai = tsumohai
-                if not self.syncing and ENABLE_PLAYWRIGHT and AUTOPLAY:
-                    logger.log("CLICK", latest_mjai_msg)
-                    self.app.set_timer(0.15, self.autoplay)
-                    # self.autoplay(tehai, tsumohai)
-
-        except Exception as e:
-            logger.error(e)
-            pass
+            # Action
+            logger.info(f"Current tehai: {tehai}")
+            logger.info(f"Current tsumohai: {tsumohai}")
+            self.tehai = tehai
+            self.tsumohai = tsumohai
+            if not self.syncing and ENABLE_PLAYWRIGHT and AUTOPLAY:
+                logger.log("CLICK", latest_mjai_msg)
+                self.app.set_timer(0.15, self.autoplay)
+                # self.autoplay(tehai, tsumohai)
 
     @on(Checkbox.Changed, "#checkbox_autoplay")
     def checkbox_autoplay_changed(self, event: Checkbox.Changed) -> None:
